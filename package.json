@@ -16,6 +16,7 @@
   "dependencies": {
     "body-parser": "^2.2.2",
     "concurrently": "^9.2.1",
+    "connect-mongo": "^6.0.0",
     "connect-mongodb-session": "^5.0.0",
     "ejs": "^5.0.1",
     "express": "^5.2.1",

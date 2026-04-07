@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const session=require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -15,6 +16,13 @@ const authRouter = require("./routes/authRouter");
 
 const app = express();
 
+const DB_PATH = "";
+
+const store = new MongoDBStore({
+    uri: DB_PATH,
+    collection: 'sessions',
+})
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -24,6 +32,7 @@ app.use(session({
     secret: "this is nice",
     resave: false,
     saveUninitialized: true,
+    store
 }));
 
 app.use((req,res,next)=>{
@@ -38,7 +47,6 @@ app.use(storeRouter);
 
 app.use("/host",(req,res,next)=>{
     if(req.isLoggedIn) {
-
         next();
     } else {
         res.redirect("/login");
@@ -49,8 +57,6 @@ app.use("/host", hostRouter);
 app.use(express.static(path.join(rootDir, 'public')))
 
 app.use(errorsController.pageNotFound);
-
-const DB_PATH=""
 
 PORT=3000;
 mongoose.connect(DB_PATH).then(()=> {

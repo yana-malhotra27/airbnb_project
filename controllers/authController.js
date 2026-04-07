@@ -11,7 +11,7 @@ exports.postLogin = (req, res, next) => {
   //req.isLoggedIn = true;
   // res.cookie("isLoggedIn",true);
   // res.redirect("/");
-  console.log(req.body)
+  //console.log(req.body)
   req.session.isLoggedIn=true;
   res.redirect("/");
 };
@@ -19,6 +19,10 @@ exports.postLogin = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
   //console.log(req.body);
   //req.isLoggedIn = true;
-  req.session.isLoggedIn=false;
-  res.redirect("/login");
+  // req.session.isLoggedIn=false;
+  // res.redirect("/login");
+
+  req.session.destroy(() => {
+    res.redirect("/login");
+  })
 };
