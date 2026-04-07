@@ -4,6 +4,7 @@ const path = require('path');
 // External Module
 const express = require('express');
 const mongoose = require('mongoose');
+const session=require('express-session');
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -19,9 +20,15 @@ app.set('views', 'views');
 
 app.use(express.urlencoded());
 
+app.use(session({
+    secret: "this is nice",
+    resave: false,
+    saveUninitialized: true,
+}));
+
 app.use((req,res,next)=>{
     //console.log(req.get('cookies'));
-    req.isLoggedIn = req.get('Cookie') ? req.get('Cookie').split('=')[1]==='true' : false;
+    req.isLoggedIn = req.session.isLoggedIn;
     //console.log(req.isLoggedIn);
     next();
 });
