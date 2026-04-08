@@ -16,7 +16,7 @@ const authRouter = require("./routes/authRouter");
 
 const app = express();
 
-const DB_PATH = "";
+const DB_PATH = "y";
 
 const store = new MongoDBStore({
     uri: DB_PATH,
