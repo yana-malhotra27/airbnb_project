@@ -3,35 +3,88 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 
 exports.getLogin = (req, res, next) => {
+  console.log("home:", req.session.isLoggedIn)
   res.render("auth/login", {
     pageTitle: "Login",
     currentPage: "login",
-    isLoggedIn: false
+    isLoggedIn: false,
+    errors: [],
+    oldInput: {email: ""},
+    user: {},
   });
 };
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async (req, res, next) => {
   //console.log(req.body);
-  //req.isLoggedIn = true;
+  //req.session.isLoggedIn = true;
   // res.cookie("isLoggedIn",true);
   // res.redirect("/");
   //console.log(req.body)
-  req.session.isLoggedIn=true;
-  res.redirect("/");
+  const {email, password} = req.body;
+  const user = await User.findOne({email});
+   if (!user) {
+    return res.status(422).render("auth/login", {
+      pageTitle: "Login",
+      currentPage: "login",
+      isLoggedIn: false,
+      errors: ["User does not exist"],
+      oldInput: {email},
+      user: {},
+    });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(422).render("auth/login", {
+      pageTitle: "Login",
+      currentPage: "login",
+      isLoggedIn: false,
+      errors: ["Invalid Password"],
+      oldInput: {email},
+      user: {},
+    });
+  }
+
+  req.session.isLoggedIn = true;
+  console.log("BEFORE SAVE:", req.session.isLoggedIn);
+  console.log("LOGIN SESSION ID before save:", req.sessionID);
+  //req.session.user = user;
+  //await req.session.save();
+// console.log("AFTER SAVE:", req.session.isLoggedIn);
+// console.log("LOGIN SESSION ID after save:", req.sessionID);
+  //res.redirect("/");
+req.session.user = {
+    _id: user._id.toString(),
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    userType: user.userType,
+  };
+  // Use:
+req.session.save((err) => {
+    if (err) {
+        console.log("Session save error:", err);
+        return next(err);
+    }
+    res.redirect("/");
+});
+
+  // req.session.isLoggedIn=true;
+  // res.redirect("/");
 };
 
 exports.postLogout = (req, res, next) => {
   //console.log(req.body);
-  //req.isLoggedIn = true;
+  //req.session.isLoggedIn = true;
   // req.session.isLoggedIn=false;
   // res.redirect("/login");
 
-  req.session.destroy(() => {
+   req.session.destroy(() => {
     res.redirect("/login");
   })
 };
 
-exports.getSignUp = (req, res, next) => {
+exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
     pageTitle: "Signup",
     currentPage: "signup",
@@ -42,7 +95,7 @@ exports.getSignUp = (req, res, next) => {
   });
 };
 
-exports.postSignUp = [
+exports.postSignup = [
   check("firstName")
   .trim()
   .isLength({min: 2})
@@ -96,7 +149,7 @@ exports.postSignUp = [
     }
     return true;
   }),
-
+  
   (req, res, next) => {
     const {firstName, lastName, email, password, userType} = req.body;
     const errors = validationResult(req);
@@ -119,6 +172,7 @@ exports.postSignUp = [
     .then(() => {
       res.redirect("/login");
     }).catch(err => {
+      console.log("home:", req.session.isLoggedIn)
       return res.status(422).render("auth/signup", {
         pageTitle: "Signup",
         currentPage: "signup",

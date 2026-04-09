@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tailwinddd": "tailwind -i ./views/input.css -o ./public/output.css --watch",
     "startttt": "nodemon app.js & npm run tailwind",
-    "dev": "concurrently \"nodemon app.js\" \"npx tailwindcss -i ./views/input.css -o ./public/output.css --watch\""
+    "dev": "concurrently \"nodemon\" \"npx tailwindcss -i ./views/input.css -o ./public/output.css --watch\""
   },
   "keywords": [],
   "author": "",
@@ -17,13 +17,12 @@
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "concurrently": "^9.2.1",
-    "connect-mongo": "^6.0.0",
     "connect-mongodb-session": "^5.0.0",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
-    "mongodb": "^7.1.1",
+    "mongodb": "^6.21.0",
     "mongoose": "^9.3.3",
     "mysql2": "^3.20.0",
     "path": "^0.12.7"

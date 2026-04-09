@@ -16,29 +16,30 @@ const authRouter = require("./routes/authRouter");
 
 const app = express();
 
-const DB_PATH = "y";
-
-const store = new MongoDBStore({
-    uri: DB_PATH,
-    collection: 'sessions',
-})
+const DB_PATH = "";
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
+const store = new MongoDBStore({
+    uri: DB_PATH,
+    collection: 'sessions'
+})
+app.use(express.static(path.join(rootDir, 'public')))
 
 app.use(express.urlencoded());
 
 app.use(session({
     secret: "this is nice",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store
 }));
 
 app.use((req,res,next)=>{
     //console.log(req.get('cookies'));
-    req.isLoggedIn = req.session.isLoggedIn;
-    //console.log(req.isLoggedIn);
+    req.isLoggedIn = req.session.isLoggedIn
+    //console.log(req.session.isLoggedIn);
     next();
 });
 
@@ -54,11 +55,11 @@ app.use("/host",(req,res,next)=>{
 });
 app.use("/host", hostRouter);
 
-app.use(express.static(path.join(rootDir, 'public')))
+
 
 app.use(errorsController.pageNotFound);
 
-PORT=3000;
+PORT=3003;
 mongoose.connect(DB_PATH).then(()=> {
     console.log("mongoose connected")
     app.listen(PORT,()=>{
