@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const session=require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const multer=require('multer');
+require("dotenv").config();
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -17,13 +18,11 @@ const authRouter = require("./routes/authRouter");
 
 const app = express();
 
-const DB_PATH = "";
-
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const store = new MongoDBStore({
-    uri: DB_PATH,
+    uri: process.env.MONGO_URI,
     collection: 'sessions'
 })
 
@@ -96,7 +95,7 @@ app.use("/host", hostRouter);
 app.use(errorsController.pageNotFound);
 
 PORT=3003;
-mongoose.connect(DB_PATH).then(()=> {
+mongoose.connect(process.env.MONGO_URI).then(()=> {
     console.log("mongoose connected")
     app.listen(PORT,()=>{
     console.log(`server is running at http://localhost:${PORT}`);
