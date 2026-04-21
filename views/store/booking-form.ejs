@@ -1,0 +1,90 @@
+<%- include('../partials/head') %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+
+  <main class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
+
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+      Book <%= home.houseName %>
+    </h1>
+
+    <!-- Hidden bookings data -->
+    <div id="bookingsData" data-bookings='<%- JSON.stringify(bookings || []) %>'></div>
+
+    <form action="/bookings" method="POST" class="max-w-md mx-auto">
+
+      <input type="hidden" name="homeId" value="<%= home._id %>" />
+
+      <!-- Date Picker -->
+      <input type="text" id="datePicker" placeholder="Select booking dates" class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+
+      <input type="hidden" name="fromDate" id="fromDate">
+      <input type="hidden" name="toDate" id="toDate">
+
+      <!-- Name -->
+      <input type="text" name="name" placeholder="Enter your name" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+
+      <!-- Aadhaar -->
+      <input type="text" name="aadhaar" maxlength="4" placeholder="Aadhaar last 4 digits" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+
+      <!-- Payment button -->
+      <button type="button" class="w-full bg-blue-400 text-white py-2 rounded-md mb-4 hover:bg-blue-500 transition">
+        Proceed to Payment
+      </button>
+
+      <!-- Submit -->
+      <input type="submit" value="Confirm Booking" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-300" />
+
+    </form>
+
+  </main>
+
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script>
+    const bookingsDataElement = document.getElementById("bookingsData");
+    const rawBookings = JSON.parse(bookingsDataElement.dataset.bookings);
+
+    const disabledRanges = rawBookings.map(b => ({
+      from: b.fromDate,
+      to: b.toDate
+    }));
+
+    flatpickr("#datePicker", {
+      mode: "range",
+      minDate: "today",
+      disable: disabledRanges,
+      dateFormat: "Y-m-d",
+
+      onChange: function(selectedDates) {
+        if (selectedDates.length === 2) {
+          document.getElementById("fromDate").value = selectedDates[0].toISOString();
+          document.getElementById("toDate").value = selectedDates[1].toISOString();
+        }
+        
+      },
+
+       onDayCreate: function(dObj, dStr, fp, dayElem) {
+    const date = dayElem.dateObj;
+
+    rawBookings.forEach(b => {
+      const from = new Date(b.fromDate);
+      const to = new Date(b.toDate);
+
+      if (date >= from && date <= to) {
+        dayElem.title = "Already Booked";
+        dayElem.style.backgroundColor = "#fecaca";
+        dayElem.style.color = "#991b1b";
+      }
+      });
+  }
+    });
+  </script>
+
+</body>
+
+</html>
