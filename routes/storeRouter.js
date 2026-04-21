@@ -13,5 +13,7 @@ storeRouter.get("/favourites", storeController.getFavouriteList);
 storeRouter.get("/homes/:homeId", storeController.getHomeDetails);
 storeRouter.post("/favourites", storeController.postAddToFavourite);
 storeRouter.post("/favourites/delete/:homeId", storeController.postRemoveFromFavourite);
+storeRouter.post("/bookings", storeController.postAddToBooking);
+storeRouter.post("/bookings/delete/:homeId", storeController.postRemoveFromBooking);
 
 module.exports = storeRouter;
