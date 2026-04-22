@@ -128,6 +128,9 @@ exports.getBookingForm = async (req, res) => {
   if (!req.isLoggedIn) {
     return res.redirect("/login");
   }
+  if (req.session.user.userType === "host") {
+  return res.redirect("/host/host-home-list");
+}
 
   const home = await Home.findById(req.params.homeId);
   if (!home) {
@@ -156,6 +159,9 @@ exports.postAddToBooking = async (req, res) => {
   if (!req.isLoggedIn) {
     return res.redirect("/login");
   }
+  if (req.session.user.userType === "host") {
+  return res.redirect("/host/host-home-list");
+}
 
   const { homeId, fromDate, toDate, name, aadhaar } = req.body;
     const home = await Home.findById(homeId);

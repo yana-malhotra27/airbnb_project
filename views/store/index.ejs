@@ -23,9 +23,15 @@
               <span class="text-gray-700"><%= home.rating %></span>
             </div>
           </div>
-          <a href="<%= isLoggedIn ? '/book/' + home._id : '/login' %>" class="bg-green-300 p-2">
+          <% if (isLoggedIn && user.userType === 'guest') { %>
+          <a href="/book/<%= home._id %>" class="bg-green-300 p-2">
             Book Now
           </a>
+          <% } else if (!isLoggedIn) { %>
+          <a href="/login" class="bg-green-300 p-2">
+            Login to Book
+          </a>
+          <% } %>
         </div>
       </div>
       <% }) %>
