@@ -1,25 +1,29 @@
-const mongoose=require('mongoose');
+const mongoose = require("mongoose");
 //const favourite = require('./favourite');
 
 const homeSchema = new mongoose.Schema({
-      houseName : {
-        type: String,
-        required: true
-      },
-      price : {
-        type: Number,
-        required: true
-      },
-      location : {
-        type: String,
-        required: true
-      },
-      rating : {
-        type: Number,
-        required: true
-      },
-      photo : String,
-      description : String
+  houseName: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+  },
+  photo: String,
+  description: String,
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 // homeSchema.pre('findOneAndDelete', async function(next) {
@@ -29,4 +33,4 @@ const homeSchema = new mongoose.Schema({
 //   //next();
 // });
 
-module.exports = mongoose.model("Home",homeSchema);
+module.exports = mongoose.model("Home", homeSchema);

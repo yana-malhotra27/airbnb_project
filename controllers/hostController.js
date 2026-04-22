@@ -1,4 +1,5 @@
 const Home = require("../models/home");
+const Booking = require("../models/booking");
 const fs = require('fs');
 
 exports.getAddHome = (req, res, next) => {
@@ -34,13 +35,14 @@ exports.getEditHome = (req, res, next) => {
 };
 
 exports.getHostHomes = (req, res, next) => {
-  Home.find().then((registeredHomes) => {
+  Home.find({ owner: req.session.user._id }).then((registeredHomes) => {
     res.render("host/host-home-list", {
       registeredHomes: registeredHomes,
       pageTitle: "Host Homes List",
       currentPage: "host-homes",
       isLoggedIn: req.isLoggedIn, 
       user: req.session.user,
+      errors: []
     });
   });
 };
@@ -61,6 +63,7 @@ exports.postAddHome = (req, res, next) => {
     rating,
     photo,
     description,
+    owner: req.session.user._id
   });
   home.save().then(() => {
     console.log("Home Saved successfully");
@@ -97,14 +100,58 @@ exports.postEditHome = (req, res, next) => {
   });
 };
 
-exports.postDeleteHome = (req, res, next) => {
+exports.postDeleteHome = async (req, res, next) => {
   const homeId = req.params.homeId;
   console.log("Came to delete ", homeId);
-  Home.findByIdAndDelete(homeId)
+  const existingBooking = await Booking.findOne({ home: homeId });
+    if (existingBooking) {
+    const registeredHomes = await Home.find({ owner: req.session.user._id });
+
+    return res.status(422).render("host/host-home-list", {
+      registeredHomes,
+      pageTitle: "Host Homes List",
+      currentPage: "host-homes",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+      errors: ["This home has bookings. Cancel them first."]
+    });
+  }
+
+  await Home.findByIdAndDelete(homeId)
     .then(() => {
       res.redirect("/host/host-home-list");
     })
     .catch((error) => {
       console.log("Error while deleting ", error);
     });
+};
+
+exports.getHostBookings = async (req, res) => {
+  const hostId = req.session.user._id;
+
+  // 1. host homes
+  const homes = await Home.find({ owner: hostId });
+
+  const homeIds = homes.map(h => h._id);
+
+  // 2. homes bookings
+  const bookings = await Booking.find({
+    home: { $in: homeIds }
+  }).populate("home user");
+
+  res.render("host/host-bookings", {
+    bookings,
+    pageTitle: "Host Bookings",
+    currentPage: "host-bookings",
+    isLoggedIn: req.isLoggedIn,
+    user: req.session.user
+  });
+};
+
+exports.cancelBookingByHost = async (req, res) => {
+  const bookingId = req.params.bookingId;
+
+  await Booking.findByIdAndDelete(bookingId);
+
+  res.redirect("/host/bookings");
 };

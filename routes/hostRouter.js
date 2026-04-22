@@ -13,6 +13,9 @@ hostRouter.get("/edit-home/:homeId", hostController.getEditHome);
 hostRouter.post("/edit-home", hostController.postEditHome);
 hostRouter.post("/delete-home/:homeId", hostController.postDeleteHome);
 
+hostRouter.get("/bookings", hostController.getHostBookings);
+hostRouter.post("/cancel-booking/:bookingId", hostController.cancelBookingByHost);
+
 // hostRouter.get("/add-home",(req,res,next)=>{
 //     res.sendFile(path.join(rootDir,"views","addHome.html"))
 // })
