@@ -139,6 +139,7 @@ exports.getBookingForm = async (req, res) => {
   res.render("store/booking-form", {
     home,
     bookings,
+    pricePerNight: home.price,
     pageTitle: "Booking Form",
     currentPage: "Booking Form",
     isLoggedIn: req.isLoggedIn,
@@ -152,6 +153,9 @@ exports.postAddToBooking = async (req, res) => {
   }
 
   const { homeId, fromDate, toDate, name, aadhaar } = req.body;
+    if (!fromDate || !toDate) {
+  return res.send("Dates are required");
+}
 
   const start = new Date(fromDate);
   const end = new Date(toDate);
@@ -175,7 +179,6 @@ exports.postAddToBooking = async (req, res) => {
   if (existingBooking) {
     return res.send("Already booked for these dates");
   }
-
   // save
   const booking = new Booking({
     home: homeId,
