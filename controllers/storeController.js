@@ -143,7 +143,12 @@ exports.getBookingForm = async (req, res) => {
     pageTitle: "Booking Form",
     currentPage: "Booking Form",
     isLoggedIn: req.isLoggedIn,
-    user: req.session.user
+    user: req.session.user,
+    errors: [],              
+    oldInput: {         
+      name: "",
+      aadhaar: ""
+    }
   });
 };
 
@@ -153,18 +158,43 @@ exports.postAddToBooking = async (req, res) => {
   }
 
   const { homeId, fromDate, toDate, name, aadhaar } = req.body;
-    if (!fromDate || !toDate) {
-  return res.send("Dates are required");
+    const home = await Home.findById(homeId);
+const bookings = await Booking.find({ home: homeId });
+  
+  if (!fromDate || !toDate) {
+//req.flash("error", "Dates not available");
+//return res.redirect(`/book/${homeId}`);
+
+return res.status(422).render("store/booking-form", {
+      home,
+      bookings,
+      pricePerNight: home.price,
+      pageTitle: "Booking Form",
+      currentPage: "Booking Form",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+      errors: ["Please select booking dates"],
+      oldInput: { name, aadhaar }
+    });
 }
 
   const start = new Date(fromDate);
   const end = new Date(toDate);
 
   // invalid
-  if (start > end) {
-    return res.send("Invalid dates");
+if (isNaN(start) || isNaN(end) || start > end) {
+    return res.status(422).render("store/booking-form", {
+      home,
+      bookings,
+      pricePerNight: home.price,
+      pageTitle: "Booking Form",
+      currentPage: "Booking Form",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+      errors: ["Invalid date selection"],
+      oldInput: { name, aadhaar }
+    });
   }
-
   // overlap check
   const existingBooking = await Booking.findOne({
     home: homeId,
@@ -177,8 +207,20 @@ exports.postAddToBooking = async (req, res) => {
   });
 
   if (existingBooking) {
-    return res.send("Already booked for these dates");
+    return res.status(422).render("store/booking-form", {
+      home,
+      bookings,
+      pricePerNight: home.price,
+      pageTitle: "Booking Form",
+      currentPage: "Booking Form",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+      errors: ["Already booked for selected dates"],
+      oldInput: { name, aadhaar }
+    });
   }
+
+  
   // save
   const booking = new Booking({
     home: homeId,

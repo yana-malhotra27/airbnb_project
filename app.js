@@ -8,6 +8,7 @@ const session=require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const multer=require('multer');
 require("dotenv").config();
+//const flash = require("connect-flash");
 
 //Local Module
 const storeRouter = require("./routes/storeRouter")
@@ -70,6 +71,14 @@ app.use(session({
     saveUninitialized: false,
     store
 }));
+
+//app.use(flash());
+
+// app.use((req, res, next) => {
+//   res.locals.success = req.flash("success") || [];
+//   res.locals.error = req.flash("error") || [];
+//   next();
+// });
 
 app.use((req,res,next)=>{
     //console.log(req.get('cookies'));

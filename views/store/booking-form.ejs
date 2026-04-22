@@ -3,6 +3,7 @@
 
 <body>
   <%- include('../partials/nav') %>
+  <%- include('../partials/errors') %>
 
   <main class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
 
@@ -26,10 +27,10 @@
 
 
       <!-- Name -->
-      <input type="text" name="name" placeholder="Enter your name" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+      <input type="text" name="name" placeholder="Enter your name" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" value="<%= oldInput.name ? oldInput.name : '' %>" />
 
       <!-- Aadhaar -->
-      <input type="text" name="aadhaar" maxlength="4" placeholder="Aadhaar last 4 digits" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+      <input type="text" name="aadhaar" maxlength="4" placeholder="Aadhaar last 4 digits" required class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" value="<%= oldInput.aadhaar ? oldInput.aadhaar : '' %>" />
 
 <div class="bg-gray-50 border rounded-lg p-4 mb-4 shadow-sm">
 
